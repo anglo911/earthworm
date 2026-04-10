@@ -1,0 +1,58 @@
+services:
+  # Backend API Service
+  - type: web
+    name: earthworm-api
+    env: node
+    region: singapore
+    buildCommand: pnpm install && pnpm build:server
+    startCommand: pnpm prod:serve
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+      - key: REDIS_URL
+        value: ${REDIS_URL}
+      - key: LOGTO_DB_URL
+        value: ${LOGTO_DB_URL}
+      - key: LOGTO_ENDPOINT
+        value: ${LOGTO_ENDPOINT}
+      - key: LOGTO_APP_ID
+        value: ${LOGTO_APP_ID}
+      - key: LOGTO_APP_SECRET
+        value: ${LOGTO_APP_SECRET}
+
+  # Frontend Client Service  
+  - type: web
+    name: earthworm-client
+    env: node
+    region: singapore
+    buildCommand: pnpm install && pnpm build:client
+    startCommand: npx serve@latest dist -l $PORT
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_BASE_URL
+        value: https://earthworm-api.onrender.com
+      - key: VITE_LOGTO_ENDPOINT
+        value: ${LOGTO_ENDPOINT}
+      - key: VITE_LOGTO_APP_ID
+        value: ${LOGTO_APP_ID}
+
+  # PostgreSQL Database
+  - type: psql
+    name: earthworm-db
+    region: singapore
+    version: "14"
+
+  # Redis
+  - type: redis
+    name: earthworm-redis
+    region: singapore
+    version: "5"
+
+  # Logto Postgres Database
+  - type: psql
+    name: logto-db
+    region: singapore
+    version: "14"
